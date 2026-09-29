@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="fa" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>اشتراک {{ c.name }}</title><link rel="stylesheet" href="/static/style.css"></head>
+<body class="center">
+<div class="card">
+  <h1>{{ c.name }}</h1>
+  <p class="{{ 'ok' if active else 'err' }}">{{ 'فعال' if active else 'غیرفعال / منقضی' }}</p>
+  <p>مصرف: {{ used }} GB {% if total %}از {{ total }} GB{% else %}(نامحدود){% endif %}</p>
+  {% if total %}<div class="bar"><div style="width:{{ pct }}%"></div></div>{% endif %}
+  <p>انقضا: {{ expiry or 'نامحدود' }}</p>
+  <textarea id="l" readonly rows="5" dir="ltr">{{ link }}</textarea>
+  <button onclick="navigator.clipboard.writeText(document.getElementById('l').value);this.textContent='کپی شد ✓'">کپی کانفیگ</button>
+  <p class="muted">برای اپ‌های کلاینت می‌توانید همین آدرس صفحه را به‌عنوان لینک اشتراک اضافه کنید.</p>
+</div></body></html>

@@ -1,0 +1,19 @@
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,Tahoma,sans-serif;background:#0f1419;color:#e6edf3}
+body.center{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
+header{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:#161b22;border-bottom:1px solid #30363d}
+h1,h2{margin:0 0 12px}header h1{margin:0;font-size:1.2rem}
+main{max-width:1000px;margin:20px auto;padding:0 12px}
+.card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:20px;width:100%;max-width:420px}
+.card.wide{max-width:none;margin-bottom:16px}
+input,select,textarea{width:100%;padding:10px;margin:6px 0;background:#0d1117;color:inherit;border:1px solid #30363d;border-radius:8px;font:inherit}
+button{padding:9px 14px;background:#238636;color:#fff;border:0;border-radius:8px;cursor:pointer;font:inherit}
+button.danger{background:#da3633}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.row>*{flex:1 1 150px;margin:0}
+.scroll{overflow-x:auto;margin-top:12px}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{padding:8px;border-bottom:1px solid #30363d;text-align:right;white-space:nowrap}
+.acts button{margin:2px;padding:5px 9px;font-size:.8rem}
+.ok{color:#3fb950}.err{color:#f85149}.muted{color:#8b949e;font-size:.85rem}
+.bar{height:8px;background:#30363d;border-radius:4px;overflow:hidden;margin:6px 0}
+.bar div{height:100%;background:#238636}

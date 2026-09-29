@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="fa" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ورود</title><link rel="stylesheet" href="/static/style.css"></head>
+<body class="center">
+<form class="card" method="post" action="/api/login">
+  <h1>ورود به پنل</h1>
+  {% if err %}<p class="err">نام کاربری یا رمز اشتباه است</p>{% endif %}
+  <input name="username" placeholder="نام کاربری" autocomplete="username" required>
+  <input name="password" type="password" placeholder="رمز عبور" autocomplete="current-password" required>
+  <button>ورود</button>
+</form></body></html>

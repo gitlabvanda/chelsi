@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="fa" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>داشبورد</title><link rel="stylesheet" href="/static/style.css"></head>
+<body>
+<header><h1>پنل مدیریت</h1><button onclick="logout()">خروج</button></header>
+<main>
+<section class="card wide"><h2>نقاط اتصال</h2>
+  <div class="row">
+    <input id="ep-remark" placeholder="نام">
+    <select id="ep-kind">
+      <option value="web-http">حالت وب (روی دامنه Railway)</option>
+      <option value="edge-tcp">حالت مستقیم A (نیاز به TCP Proxy)</option>
+      <option value="edge-http">حالت مستقیم B (نیاز به TCP Proxy)</option>
+    </select>
+    <select id="ep-mode"><option>packet-up</option><option>stream-up</option><option>stream-one</option></select>
+    <button onclick="addEndpoint()">افزودن</button>
+  </div>
+  <div class="scroll"><table id="eps"></table></div>
+</section>
+<section class="card wide"><h2>کاربران</h2>
+  <div class="row">
+    <input id="c-name" placeholder="نام کاربر">
+    <select id="c-ep"></select>
+    <input id="c-gb" type="number" min="0" step="any" placeholder="حجم GB (۰=نامحدود)">
+    <input id="c-days" type="number" min="0" placeholder="روز (۰=نامحدود)">
+    <button onclick="addAccount()">افزودن</button>
+  </div>
+  <div class="scroll"><table id="cls"></table></div>
+</section>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function api(p,method='GET',body){
+  const r=await fetch('/api'+p,{method,headers:{'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});
+  if(r.status===401){location='/login';return null}
+  if(!r.ok){const j=await r.json().catch(()=>({}));alert(j.detail||'خطا');return null}
+  return r.json();
+}
+const gb=b=>(b/1073741824).toFixed(2);
+async function load(){
+  const eps=(await api('/endpoints'))||[];
+  $('#eps').innerHTML='<tr><th>#</th><th>نام</th><th>نوع</th><th>حالت</th><th>کاربر</th><th></th></tr>'+
+    eps.map(i=>`<tr><td>${i.id}</td><td>${esc(i.remark)}</td><td>${esc(i.kind)}</td><td>${esc(i.mode)}</td><td>${i.accounts}</td><td><button class="danger" onclick="delEp(${i.id})">حذف</button></td></tr>`).join('');
+  $('#c-ep').innerHTML=eps.map(i=>`<option value="${i.id}">${esc(i.remark)}</option>`).join('');
+  const cls=(await api('/accounts'))||[];
+  $('#cls').innerHTML='<tr><th>نام</th><th>نقطه اتصال</th><th>مصرف</th><th>انقضا</th><th>وضعیت</th><th></th></tr>'+
+    cls.map(c=>`<tr><td>${esc(c.name)}</td><td>${esc(c.endpoint)}</td>
+    <td>${gb(c.used)} / ${c.total?gb(c.total):'∞'}</td><td>${esc(c.expiry||'∞')}</td>
+    <td class="${c.active?'ok':'err'}">${c.active?'فعال':'غیرفعال'}</td>
+    <td class="acts"><button onclick="copySub('${esc(c.token)}')">لینک</button>
+    <button onclick="tog(${c.id})">${c.enable?'توقف':'فعال‌سازی'}</button>
+    <button onclick="rst(${c.id})">ریست</button>
+    <button class="danger" onclick="delAcc(${c.id})">حذف</button></td></tr>`).join('');
+}
+async function addEndpoint(){if(await api('/endpoints','POST',{remark:$('#ep-remark').value,kind:$('#ep-kind').value,mode:$('#ep-mode').value}))load()}
+async function delEp(id){if(confirm('حذف نقطه اتصال و همه کاربرانش؟')&&await api('/endpoints/'+id,'DELETE'))load()}
+async function addAccount(){
+  if(await api('/accounts','POST',{endpoint_id:+$('#c-ep').value,name:$('#c-name').value,gb:+$('#c-gb').value||0,days:+$('#c-days').value||0}))load()}
+async function tog(id){if(await api('/accounts/'+id+'/toggle','POST'))load()}
+async function rst(id){if(await api('/accounts/'+id+'/reset','POST'))load()}
+async function delAcc(id){if(confirm('حذف کاربر؟')&&await api('/accounts/'+id,'DELETE'))load()}
+function copySub(t){const u=location.origin+'/sub/'+t;navigator.clipboard.writeText(u).then(()=>alert('کپی شد:\n'+u))}
+async function logout(){await api('/logout','POST');location='/login'}
+load();
+</script></body></html>
